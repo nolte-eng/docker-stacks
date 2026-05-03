@@ -1,0 +1,26 @@
+services:
+  wud:
+    image: getwud/wud:latest
+    container_name: wud
+    restart: unless-stopped
+
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+    ports:
+      - "3000:3000"
+
+    environment:
+      - WUD_WATCHER_LOCAL_CRON=0 8 * * *
+      - WUD_WATCHER_LOCAL_WATCHBYDEFAULT=true
+
+      # Erstmal nur anzeigen, NICHT automatisch updaten
+      - WUD_TRIGGER_DOCKERCOMPOSE_AUTO=false
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.wud.rule=Host(`wud.nolte-eng.de`)"
+      - "traefik.http.routers.wud.entrypoints=websecure"
+      - "traefik.http.routers.wud.tls=true"
+      - "traefik.http.routers.wud.tls.certresolver=cloudflare"
+      - "traefik.http.services.wud.loadbalancer.server.port=3000"
