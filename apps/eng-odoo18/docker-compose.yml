@@ -15,9 +15,9 @@ services:
     networks:
       - web
 
-    ports:
-      - "10069:8069"
-      - "10072:8072"
+#    ports:
+#      - "10069:8069"
+#      - "10072:8072"
 
     env_file:
       - ./.env

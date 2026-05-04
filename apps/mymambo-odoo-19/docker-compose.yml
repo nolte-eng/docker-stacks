@@ -3,24 +3,24 @@ services:
     image: odoo:19.0
     container_name: Odoo_mymambo_19
     user: root
-#    user: "101:101"
-#    command:
-#      odoo -u all -d sales19e
+
     restart: always
     tty: true
-    environment:
-      - HOST=odoo-db
-      - USER=odoo
-      - PASSWORD=odoo
-      - HOME=/var/lib/odoo                 # <<< wichtig
-      - PYTHONUSERBASE=/var/lib/odoo/.local
-      - PIP_CACHE_DIR=/var/lib/odoo/.cache/pip
-      # optional, falls Logs nerven:
-      - PIP_NO_CACHE_DIR=off
-      - PIP_ROOT_USER_ACTION=ignore
+    env_file:
+      - .env
+      - .secrets.env
+
 #    ports:
 #      - "13069:8069"
 #      - "13072:8072"
+
+#    command:
+#      odoo -u all -d sales19e
+
+
+
+
+
     volumes:
       - mymambo19-data:/var/lib/odoo
       - ./config:/etc/odoo
