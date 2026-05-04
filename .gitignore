@@ -1,22 +1,90 @@
+# =========================
+# ENV / SECRETS
+# =========================
 .env
+**/.env
+*.env
+.secrets.env
+**/.secrets.env
+
+# =========================
+# LOGS
+# =========================
 *.log
+logs/
+**/logs/
+
+# =========================
+# BACKUPS / DUMPS
+# =========================
 backup/
 backups/
-store/
-data/
-letsencrypt/
-acme.json
+**/backup/
+**/backups/
 *.sql
 *.dump
 *.zip
-config/odoo.conf.env
+*.tar
+*.gz
+
+# =========================
+# ODOO DATA
+# =========================
+filestore/
+**/filestore/
+odoo_data/
+postgres_data/
+
+# =========================
+# PGADMIN
+# =========================
+**/pgadmin/data/
+
+# =========================
+# TRAEFIK / CERTS
+# =========================
+letsencrypt/
+**/letsencrypt/
+certs/
+**/certs/
+acme.json
+**/acme.json
 *.key
 *.pem
 *.crt
-acme.json
-*.log
 
-postgres_data/
-odoo_data/
-filestore/
-backups/
+# =========================
+# DOCKER VOLUMES / STORAGE
+# =========================
+data/
+store/
+**/data/
+**/store/
+
+# =========================
+# ODOO CONFIG (MIT PASSWÖRTERN)
+# =========================
+config/odoo.conf
+**/config/odoo.conf
+
+# =========================
+# PYTHON
+# =========================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# =========================
+# OS / EDITOR
+# =========================
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# =========================
+# OPTIONAL (wenn du lokal testest)
+# =========================
+node_modules/
+.env.local

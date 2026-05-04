@@ -1,0 +1,71 @@
+services:
+
+  eng-odoo18:
+    build:
+      context: ./
+      args:
+        ODOO_VERSION: ${ODOO_VERSION:-latest}
+    image: odoo:18
+    user: root
+    container_name: Odoo_eng_18
+
+#    command:
+#      odoo -u all -d eng18
+
+    networks:
+      - web
+
+    ports:
+      - "10069:8069"
+      - "10072:8072"
+
+    env_file:
+      - ./.env
+
+    restart: always
+    tty: true
+
+    volumes:
+      - eng18-data:/var/lib/odoo
+      - ./config:/etc/odoo
+      - ./entrypoint.sh:/entrypoint.sh
+      - /home/nolte/addons/18.0:/mnt/extra-addons
+      - ./backup:/var/lib/odoo/backups
+
+    labels:
+      - "traefik.enable=true"
+
+      # ==========================================
+      # Odoo 18 – NORMALER TRAFFIC → Port 8069
+      # Domain: nolte-eng.de (+ optional www)
+      # ==========================================
+      - "traefik.http.routers.eng18.rule=Host(`nolte-eng.de`) || Host(`www.nolte-eng.de`)"
+      - "traefik.http.routers.eng18.entrypoints=websecure"
+      - "traefik.http.routers.eng18.tls=true"
+      - "traefik.http.routers.eng18.tls.certresolver=cloudflare"
+      - "traefik.http.routers.eng18.middlewares=gzip-compression@file"
+      - "traefik.http.routers.eng18.service=eng18"
+
+      - "traefik.http.services.eng18.loadbalancer.server.port=8069"
+
+      # ==========================================
+      # Odoo 18 – WEBSOCKET /websocket → Port 8072
+      # ==========================================
+      - "traefik.http.routers.eng18-ws.rule=(Host(`nolte-eng.de`) || Host(`www.nolte-eng.de`)) && Path(`/websocket`)"
+      - "traefik.http.routers.eng18-ws.entrypoints=websecure"
+      - "traefik.http.routers.eng18-ws.tls=true"
+      - "traefik.http.routers.eng18-ws.tls.certresolver=cloudflare"
+      - "traefik.http.routers.eng18-ws.service=eng18-ws"
+      - "traefik.http.routers.eng18-ws.priority=100"
+
+      - "traefik.http.services.eng18-ws.loadbalancer.server.port=8072"
+
+networks:
+  web:
+    name: traefik_default
+    external: true
+
+volumes:
+  eng18-data:
+    external: true
+    name: eng-odoo18_eng18-data

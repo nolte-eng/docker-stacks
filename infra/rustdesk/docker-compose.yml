@@ -1,0 +1,24 @@
+services:
+  rustdesk-server:
+    container_name: rustdesk-server
+    image: rustdesk/rustdesk-server-s6:latest
+    restart: unless-stopped
+
+    ports:
+      - "21115:21115/tcp"
+      - "21116:21116/tcp"
+      - "21116:21116/udp"
+      - "21117:21117/tcp"
+      - "21118:21118/tcp"
+      - "21119:21119/tcp"
+
+    environment:
+      # Deine Domain für den Relay-Server
+      - RELAY=rustdesk.nolte-eng.de:21117
+
+      # Erzwingt verschlüsselte Verbindungen
+      - ENCRYPTED_ONLY=1
+
+    volumes:
+      # Persistente Daten + Schlüssel
+      - ./data:/data

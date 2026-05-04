@@ -1,0 +1,68 @@
+services:
+  sales-odoo19e:
+    image: odoo:19.0
+    container_name: Odoo_sales_19_enterprise
+    user: root
+#    user: "101:101"
+#    command:
+#      odoo -u all -d sales19e
+    restart: always
+    tty: true
+
+    env_file:
+      - .env
+      - .secrets.env
+
+#    ports:
+#      - "12069:8069"
+#      - "12072:8072"
+
+    volumes:
+      - sales19e-data:/var/lib/odoo
+      - ./config:/etc/odoo
+      - ./entrypoint.sh:/entrypoint.sh
+      - /home/nolte/addons/19.0:/mnt/extra-addons
+      - /home/nolte/enterprise/19.0:/mnt/enterprise:ro
+      - ./backup:/var/lib/odoo/backups
+    networks:
+      - web
+    labels:
+      - "traefik.enable=true"
+
+      # ======================================================
+      # Odoo 19 – NORMALER HTTP/HTTPS TRAFFIC → Port 8069
+      # sales.nolte-eng.de + larsnolte.com + www.larsnolte.com
+      # ======================================================
+
+      - "traefik.http.routers.sales19.rule=Host(`sales.nolte-eng.de`) || Host(`larsnolte.com`) || Host(`www.larsnolte.com`)"
+      - "traefik.http.routers.sales19.entrypoints=websecure"
+      - "traefik.http.routers.sales19.tls=true"
+      - "traefik.http.routers.sales19.tls.certresolver=cloudflare"
+      - "traefik.http.routers.sales19.middlewares=gzip-compression@file"
+      - "traefik.http.routers.sales19.service=sales19"
+
+      - "traefik.http.services.sales19.loadbalancer.server.port=8069"
+
+      # ======================================================
+      # Odoo 19 – WEBSOCKET /websocket → EVENT-PORT 8072
+      # Höhere Priority, damit IMMER dieser Router gewinnt
+      # ======================================================
+
+      - "traefik.http.routers.sales19-ws.rule=(Host(`sales.nolte-eng.de`) || Host(`larsnolte.com`) || Host(`www.larsnolte.com`)) && Path(`/websocket`)"
+      - "traefik.http.routers.sales19-ws.entrypoints=websecure"
+      - "traefik.http.routers.sales19-ws.tls=true"
+      - "traefik.http.routers.sales19-ws.tls.certresolver=cloudflare"
+      - "traefik.http.routers.sales19-ws.service=sales19-ws"
+      - "traefik.http.routers.sales19-ws.priority=100"
+
+      - "traefik.http.services.sales19-ws.loadbalancer.server.port=8072"
+
+networks:
+  web:
+    external: true
+    name: traefik_default
+
+volumes:
+  sales19e-data:
+    external: true
+    name: sales19_sales19e-data

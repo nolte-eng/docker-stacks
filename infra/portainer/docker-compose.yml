@@ -17,10 +17,10 @@ services:
     volumes:
       - portainer_data:/data
       - /var/run/docker.sock:/var/run/docker.sock
-    ports:
-      - "8000:8000"
-      - "9000:9000"
-      - "9443:9443"
+#    ports:
+#      - "8000:8000"
+#      - "9000:9000"
+#      - "9443:9443"
     networks:
       - web
   #         ipv4_address: 172.28.0.20

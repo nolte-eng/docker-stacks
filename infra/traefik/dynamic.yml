@@ -1,0 +1,9 @@
+http:
+  middlewares:
+    gzip-compression:
+      compress: {}
+
+    force-https:
+      redirectScheme:
+        scheme: https
+        permanent: true

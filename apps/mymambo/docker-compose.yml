@@ -18,15 +18,16 @@ services:
       # optional, falls Logs nerven:
       - PIP_NO_CACHE_DIR=off
       - PIP_ROOT_USER_ACTION=ignore
-    ports:
-      - "13069:8069"
-      - "13072:8072"
+#    ports:
+#      - "13069:8069"
+#      - "13072:8072"
     volumes:
       - mymambo19-data:/var/lib/odoo
       - ./config:/etc/odoo
       - ./entrypoint.sh:/entrypoint.sh
       - ./addons:/mnt/extra-addons
-    #  - ./enterprise:/mnt/enterprise:ro
+      - /home/nolte/addons/19.0:/mnt/extra-addons
+    # - /home/nolte/enterprise/19.0:/mnt/enterprise:ro 
       - ./backup:/var/lib/odoo/backups
     networks:
       - web

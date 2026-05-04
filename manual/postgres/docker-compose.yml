@@ -1,0 +1,24 @@
+services:
+  odoo-db:
+    image: pgvector/pgvector:pg17
+    container_name: odoo-db
+    restart: always
+
+    env_file:
+      - .env
+
+    volumes:
+      - odoo-db-data:/var/lib/postgresql/data
+
+    networks:
+      - web
+
+volumes:
+  odoo-db-data:
+    external: true
+    name: postgres_odoo-db-data
+
+networks:
+  web:
+    external: true
+    name: traefik_default
