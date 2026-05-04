@@ -1,0 +1,34 @@
+services:
+
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+#    expose:
+#      - 9000
+    command: -H unix:///var/run/docker.sock
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.portainer.rule=Host(`portainer.nolte-eng.de`)"
+      - "traefik.http.routers.portainer.entrypoints=websecure"
+      - "traefik.http.routers.portainer.tls.certresolver=cloudflare"
+      - "traefik.http.services.portainer.loadbalancer.server.port=9000"
+
+    volumes:
+      - portainer_data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "8000:8000"
+      - "9000:9000"
+      - "9443:9443"
+    networks:
+      - web
+  #         ipv4_address: 172.28.0.20
+
+volumes:
+  portainer_data:
+
+networks:
+   web:
+       name: traefik_default
+       external: true

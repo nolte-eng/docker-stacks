@@ -1,0 +1,26 @@
+services:
+  cloudflare-tunnel:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflare-tunnel
+    hostname: cloudflare-tunnel
+
+    restart: always
+    networks:
+      - traefik_default
+#    network_mode: "host"
+
+    command: tunnel run
+
+    volumes:
+      - /etc/localtime:/etc/localtime:ro              # Synchronize time with the host
+      - ./config/hosts:/etc/hosts
+
+    environment:
+      - "TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}"
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+
+networks:
+  traefik_default:
+    external: true

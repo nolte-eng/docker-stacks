@@ -1,0 +1,40 @@
+services:
+  traefik:
+    image: traefik:latest
+    container_name: traefik
+    restart: always
+
+    env_file:
+      - .env  # Hier wird dein CF_API_TOKEN geladen
+    environment:
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - DOCKER_API_VERSION=1.54
+
+    command:
+      - --configFile=/etc/traefik/traefik.yml
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik-dashboard.rule=Host(`traefik.nolte-eng.de`)"
+      - "traefik.http.routers.traefik-dashboard.entrypoints=websecure"
+      - "traefik.http.routers.traefik-dashboard.tls=true"
+      - "traefik.http.routers.traefik-dashboard.tls.certresolver=cloudflare"
+      - "traefik.http.routers.traefik-dashboard.service=api@internal"
+
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"  # Dashboard (nur via Host+HTTPS)
+
+    volumes:
+      - ./traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./dynamic.yml:/etc/traefik/dynamic.yml:ro
+      - ./letsencrypt:/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+    networks:
+      - traefik_default
+
+networks:
+  traefik_default:
+    external: true
